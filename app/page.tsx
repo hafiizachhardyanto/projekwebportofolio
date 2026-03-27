@@ -1,65 +1,149 @@
-import Image from "next/image";
+'use client'
 
-export default function Home() {
+import { useState } from 'react'
+import Link from 'next/link'
+import { motion } from 'framer-motion'
+import { GlitchText } from '@/components/ui/GlitchText'
+import { PixelButton } from '@/components/ui/PixelButton'
+import { PixelCard } from '@/components/ui/PixelCard'
+import { PixelBackground } from '@/components/layout/PixelBackground'
+import { ScanLine } from '@/components/ui/ScanLine'
+import { Terminal, User, ArrowRight, Sparkles, UserPlus } from 'lucide-react'
+
+export default function LandingPage() {
+  const [username, setUsername] = useState('')
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+    <div className="min-h-screen relative overflow-hidden" data-theme="green">
+      <PixelBackground />
+      <ScanLine />
+      
+      <div className="relative z-10 min-h-screen flex flex-col">
+        <header className="p-6 flex justify-between items-center">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 bg-[var(--primary)] border-4 border-[var(--background)] flex items-center justify-center animate-pulse-glow">
+              <span className="font-pixel text-[var(--background)] text-lg">P</span>
+            </div>
+            <span className="font-pixel text-[var(--primary)] text-sm hidden sm:block">PORTFOLIO.OS</span>
+          </div>
+          <div className="flex items-center gap-3">
+            <Link href="/login">
+              <PixelButton variant="secondary" size="sm">
+                Login
+              </PixelButton>
+            </Link>
+            <Link href="/register">
+              <PixelButton size="sm" className="flex items-center gap-2">
+                <UserPlus size={14} />
+                <span className="hidden sm:inline">Register</span>
+              </PixelButton>
+            </Link>
+          </div>
+        </header>
+
+        <main className="flex-1 flex items-center justify-center px-4 py-12">
+          <div className="max-w-4xl w-full">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="text-center mb-12"
             >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-[var(--surface)] border-2 border-[var(--primary)] mb-6">
+                <Sparkles size={16} className="text-[var(--primary)]" />
+                <span className="font-pixel text-xs text-[var(--primary)]">v2.0 FUTURISTIC MODE</span>
+              </div>
+              
+              <GlitchText text="8-BIT PORTFOLIO" size="xl" className="mb-4" />
+              
+              <p className="font-cyber text-lg md:text-xl text-[var(--text-muted)] max-w-2xl mx-auto leading-relaxed">
+                Create your futuristic portfolio with 8-bit aesthetics. 
+                Dynamic, editable, and totally rad.
+              </p>
+            </motion.div>
+
+            <PixelCard className="max-w-lg mx-auto mb-12">
+              <div className="space-y-6">
+                <div className="flex items-center gap-3 text-[var(--primary)] mb-4">
+                  <Terminal size={20} />
+                  <span className="font-pixel text-xs">ENTER_USERNAME.exe</span>
+                </div>
+                
+                <div className="relative">
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 font-pixel text-[var(--primary)]">
+                    @
+                  </span>
+                  <input
+                    type="text"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value.toLowerCase().replace(/[^a-z0-9]/g, ''))}
+                    placeholder="username"
+                    className="w-full bg-[var(--background)] border-4 border-[var(--border)] pl-12 pr-4 py-4 font-pixel text-sm text-[var(--text)] placeholder:text-[var(--text-muted)] focus:border-[var(--primary)] focus:outline-none transition-colors"
+                  />
+                </div>
+
+                <Link 
+                  href={username ? `/${username}` : '#'}
+                  className={!username ? 'pointer-events-none' : ''}
+                >
+                  <PixelButton 
+                    className="w-full flex items-center justify-center gap-3"
+                    disabled={!username}
+                  >
+                    View Portfolio
+                    <ArrowRight size={16} />
+                  </PixelButton>
+                </Link>
+
+                <div className="relative">
+                  <div className="absolute inset-0 flex items-center">
+                    <div className="w-full border-t-2 border-[var(--border)]" />
+                  </div>
+                  <div className="relative flex justify-center">
+                    <span className="px-4 bg-[var(--surface)] font-pixel text-xs text-[var(--text-muted)]">
+                      OR
+                    </span>
+                  </div>
+                </div>
+
+                <Link href="/register">
+                  <PixelButton variant="secondary" className="w-full flex items-center justify-center gap-3">
+                    <UserPlus size={16} />
+                    Create Your Portfolio
+                  </PixelButton>
+                </Link>
+              </div>
+            </PixelCard>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+              {[
+                { icon: User, title: 'Personal Brand', desc: 'Custom username & profile' },
+                { icon: Terminal, title: 'Dynamic Content', desc: 'Editable sections & media' },
+                { icon: Sparkles, title: '8-Bit Themes', desc: 'Multiple color schemes' },
+              ].map((feature, i) => (
+                <motion.div
+                  key={feature.title}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2 + i * 0.1 }}
+                >
+                  <PixelCard className="h-full text-center">
+                    <feature.icon size={32} className="mx-auto mb-4 text-[var(--primary)]" />
+                    <h3 className="font-pixel text-xs text-[var(--text)] mb-2">{feature.title}</h3>
+                    <p className="font-cyber text-sm text-[var(--text-muted)]">{feature.desc}</p>
+                  </PixelCard>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </main>
+
+        <footer className="p-6 text-center border-t-4 border-[var(--border)] bg-[var(--surface)]">
+          <p className="font-pixel text-xs text-[var(--text-muted)]">
+            SYSTEM.READY_ PRESS START TO CONTINUE
           </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+        </footer>
+      </div>
     </div>
-  );
+  )
 }
