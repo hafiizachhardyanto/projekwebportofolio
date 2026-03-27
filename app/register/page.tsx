@@ -11,7 +11,7 @@ import { PixelCard } from '@/components/ui/PixelCard'
 import { PixelBackground } from '@/components/layout/PixelBackground'
 import { GlitchText } from '@/components/ui/GlitchText'
 import { ScanLine } from '@/components/ui/ScanLine'
-import { UserPlus, Mail, Lock, User, AlertTriangle, ArrowLeft, Check, X } from 'lucide-react'
+import { UserPlus, Mail, Lock, User, AlertTriangle, ArrowLeft, Home, Check, X } from 'lucide-react'
 
 export default function RegisterPage() {
   const [step, setStep] = useState(1)
@@ -162,204 +162,222 @@ await createPortfolio({
       <PixelBackground />
       <ScanLine />
       
-      <div className="relative z-10 min-h-screen flex items-center justify-center p-4">
-        <motion.div
-          initial={{ scale: 0.9, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          className="w-full max-w-md"
-        >
-          <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-20 h-20 bg-[var(--surface)] border-4 border-[var(--primary)] mb-4 animate-pulse-glow">
-              <UserPlus size={32} className="text-[var(--primary)]" />
+      <div className="relative z-10 min-h-screen flex flex-col">
+        
+        {/* Header dengan Navigasi */}
+        <header className="p-4 md:p-6 flex justify-between items-center border-b-4 border-[var(--border)] bg-[var(--background)]/80 backdrop-blur">
+          <Link href="/" className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-[var(--primary)] border-2 border-[var(--background)] flex items-center justify-center">
+              <span className="font-pixel text-[var(--background)] text-xs">P</span>
             </div>
-            <GlitchText text="NEW_USER_INIT" size="md" />
-            <p className="font-cyber text-[var(--text-muted)] mt-2">
-              Create your portfolio account
-            </p>
-          </div>
+            <span className="font-pixel text-[var(--primary)] text-xs hidden sm:block">PORTFOLIO.OS</span>
+          </Link>
+          
+          <Link href="/" className="flex items-center gap-2 px-3 py-2 font-pixel text-xs text-[var(--text)] border-2 border-transparent hover:border-[var(--primary)] hover:text-[var(--primary)] transition-all">
+            <Home size={14} />
+            <span className="hidden sm:inline">Home</span>
+          </Link>
+        </header>
 
-          <PixelCard>
-            <div className="flex items-center justify-center gap-2 mb-6">
-              <div className={`w-8 h-8 flex items-center justify-center font-pixel text-xs border-4 ${step === 1 ? 'bg-[var(--primary)] text-[var(--background)] border-[var(--primary)]' : 'bg-[var(--surface)] text-[var(--text-muted)] border-[var(--border)]'}`}>
-                1
+        <main className="flex-1 flex items-center justify-center p-4">
+          <motion.div
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            className="w-full max-w-md"
+          >
+            <div className="text-center mb-8">
+              <div className="inline-flex items-center justify-center w-20 h-20 bg-[var(--surface)] border-4 border-[var(--primary)] mb-4 animate-pulse-glow">
+                <UserPlus size={32} className="text-[var(--primary)]" />
               </div>
-              <div className="w-8 h-1 bg-[var(--border)]">
-                <div className={`h-full bg-[var(--primary)] transition-all ${step === 2 ? 'w-full' : 'w-0'}`} />
-              </div>
-              <div className={`w-8 h-8 flex items-center justify-center font-pixel text-xs border-4 ${step === 2 ? 'bg-[var(--primary)] text-[var(--background)] border-[var(--primary)]' : 'bg-[var(--surface)] text-[var(--text-muted)] border-[var(--border)]'}`}>
-                2
-              </div>
+              <GlitchText text="NEW_USER_INIT" size="md" />
+              <p className="font-cyber text-[var(--text-muted)] mt-2">
+                Create your portfolio account
+              </p>
             </div>
 
-            {error && (
-              <motion.div
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                className="flex items-center gap-3 p-4 bg-[var(--accent)]/10 border-2 border-[var(--accent)] mb-6"
-              >
-                <AlertTriangle size={20} className="text-[var(--accent)] shrink-0" />
-                <span className="font-pixel text-xs text-[var(--accent)]">{error}</span>
-              </motion.div>
-            )}
+            <PixelCard>
+              <div className="flex items-center justify-center gap-2 mb-6">
+                <div className={`w-8 h-8 flex items-center justify-center font-pixel text-xs border-4 ${step === 1 ? 'bg-[var(--primary)] text-[var(--background)] border-[var(--primary)]' : 'bg-[var(--surface)] text-[var(--text-muted)] border-[var(--border)]'}`}>
+                  1
+                </div>
+                <div className="w-8 h-1 bg-[var(--border)]">
+                  <div className={`h-full bg-[var(--primary)] transition-all ${step === 2 ? 'w-full' : 'w-0'}`} />
+                </div>
+                <div className={`w-8 h-8 flex items-center justify-center font-pixel text-xs border-4 ${step === 2 ? 'bg-[var(--primary)] text-[var(--background)] border-[var(--primary)]' : 'bg-[var(--surface)] text-[var(--text-muted)] border-[var(--border)]'}`}>
+                  2
+                </div>
+              </div>
 
-            <form onSubmit={step === 2 ? handleSubmit : (e) => { e.preventDefault(); handleNext() }} className="space-y-6">
-              {step === 1 ? (
-                <>
-                  <div className="space-y-2">
-                    <label className="font-pixel text-xs text-[var(--primary)] flex items-center gap-2">
-                      <User size={14} />
-                      USERNAME_ID
-                    </label>
-                    <div className="relative">
-                      <span className="absolute left-4 top-1/2 -translate-y-1/2 font-pixel text-[var(--text-muted)]">
-                        @
-                      </span>
-                      <input
-                        type="text"
-                        value={formData.username}
-                        onChange={handleUsernameChange}
-                        placeholder="username"
-                        maxLength={20}
-                        className="w-full bg-[var(--background)] border-4 border-[var(--border)] pl-12 pr-12 py-3 font-pixel text-sm text-[var(--text)] placeholder:text-[var(--text-muted)] focus:border-[var(--primary)] focus:outline-none transition-colors"
-                      />
-                      <div className="absolute right-4 top-1/2 -translate-y-1/2">
-                        {usernameStatus === 'checking' && (
-                          <div className="w-5 h-5 border-2 border-[var(--primary)] border-t-transparent rounded-full animate-spin" />
-                        )}
-                        {usernameStatus === 'available' && (
-                          <Check size={20} className="text-[var(--primary)]" />
-                        )}
-                        {usernameStatus === 'taken' && (
-                          <X size={20} className="text-[var(--accent)]" />
-                        )}
+              {error && (
+                <motion.div
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  className="flex items-center gap-3 p-4 bg-[var(--accent)]/10 border-2 border-[var(--accent)] mb-6"
+                >
+                  <AlertTriangle size={20} className="text-[var(--accent)] shrink-0" />
+                  <span className="font-pixel text-xs text-[var(--accent)]">{error}</span>
+                </motion.div>
+              )}
+
+              <form onSubmit={step === 2 ? handleSubmit : (e) => { e.preventDefault(); handleNext() }} className="space-y-6">
+                {step === 1 ? (
+                  <>
+                    <div className="space-y-2">
+                      <label className="font-pixel text-xs text-[var(--primary)] flex items-center gap-2">
+                        <User size={14} />
+                        USERNAME ID
+                      </label>
+                      <div className="relative">
+                        <span className="absolute left-4 top-1/2 -translate-y-1/2 font-pixel text-[var(--text-muted)]">
+                          @
+                        </span>
+                        <input
+                          type="text"
+                          value={formData.username}
+                          onChange={handleUsernameChange}
+                          placeholder="username"
+                          maxLength={20}
+                          className="w-full bg-[var(--background)] border-4 border-[var(--border)] pl-12 pr-12 py-3 font-pixel text-sm text-[var(--text)] placeholder:text-[var(--text-muted)] focus:border-[var(--primary)] focus:outline-none transition-colors"
+                        />
+                        <div className="absolute right-4 top-1/2 -translate-y-1/2">
+                          {usernameStatus === 'checking' && (
+                            <div className="w-5 h-5 border-2 border-[var(--primary)] border-t-transparent rounded-full animate-spin" />
+                          )}
+                          {usernameStatus === 'available' && (
+                            <Check size={20} className="text-[var(--primary)]" />
+                          )}
+                          {usernameStatus === 'taken' && (
+                            <X size={20} className="text-[var(--accent)]" />
+                          )}
+                        </div>
                       </div>
+                      <p className="font-cyber text-xs text-[var(--text-muted)]">
+                        3-20 chars, lowercase, numbers, underscores only
+                      </p>
+                      {usernameStatus === 'taken' && (
+                        <p className="font-pixel text-xs text-[var(--accent)]">
+                          Username is already taken
+                        </p>
+                      )}
+                      {usernameStatus === 'available' && (
+                        <p className="font-pixel text-xs text-[var(--primary)]">
+                          Username is available
+                        </p>
+                      )}
                     </div>
-                    <p className="font-cyber text-xs text-[var(--text-muted)]">
-                      3-20 chars, lowercase, numbers, underscores only
-                    </p>
-                    {usernameStatus === 'taken' && (
-                      <p className="font-pixel text-xs text-[var(--accent)]">
-                        Username is already taken
-                      </p>
-                    )}
-                    {usernameStatus === 'available' && (
-                      <p className="font-pixel text-xs text-[var(--primary)]">
-                        Username is available
-                      </p>
-                    )}
-                  </div>
 
-                  <PixelButton
-                    type="button"
-                    className="w-full"
-                    onClick={handleNext}
-                    disabled={usernameStatus !== 'available' || loading}
-                  >
-                    Continue
-                  </PixelButton>
-                </>
-              ) : (
-                <>
-                  <div className="space-y-2">
-                    <label className="font-pixel text-xs text-[var(--primary)] flex items-center gap-2">
-                      <User size={14} />
-                      DISPLAY_NAME
-                    </label>
-                    <input
-                      type="text"
-                      value={formData.displayName}
-                      onChange={(e) => setFormData({ ...formData, displayName: e.target.value })}
-                      placeholder="Your Name"
-                      className="w-full bg-[var(--background)] border-4 border-[var(--border)] px-4 py-3 font-cyber text-[var(--text)] placeholder:text-[var(--text-muted)] focus:border-[var(--primary)] focus:outline-none"
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <label className="font-pixel text-xs text-[var(--primary)] flex items-center gap-2">
-                      <Mail size={14} />
-                      EMAIL_ADDRESS
-                    </label>
-                    <input
-                      type="email"
-                      value={formData.email}
-                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                      placeholder="you@example.com"
-                      className="w-full bg-[var(--background)] border-4 border-[var(--border)] px-4 py-3 font-cyber text-[var(--text)] placeholder:text-[var(--text-muted)] focus:border-[var(--primary)] focus:outline-none"
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <label className="font-pixel text-xs text-[var(--primary)] flex items-center gap-2">
-                      <Lock size={14} />
-                      PASSWORD_KEY
-                    </label>
-                    <input
-                      type="password"
-                      value={formData.password}
-                      onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                      placeholder="Min 6 characters"
-                      className="w-full bg-[var(--background)] border-4 border-[var(--border)] px-4 py-3 font-cyber text-[var(--text)] placeholder:text-[var(--text-muted)] focus:border-[var(--primary)] focus:outline-none"
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <label className="font-pixel text-xs text-[var(--primary)] flex items-center gap-2">
-                      <Lock size={14} />
-                      CONFIRM_PASSWORD
-                    </label>
-                    <input
-                      type="password"
-                      value={formData.confirmPassword}
-                      onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
-                      placeholder="Repeat password"
-                      className="w-full bg-[var(--background)] border-4 border-[var(--border)] px-4 py-3 font-cyber text-[var(--text)] placeholder:text-[var(--text-muted)] focus:border-[var(--primary)] focus:outline-none"
-                    />
-                  </div>
-
-                  <div className="flex gap-3">
                     <PixelButton
                       type="button"
-                      variant="secondary"
-                      className="flex-1"
-                      onClick={handleBack}
-                      disabled={loading}
+                      className="w-full"
+                      onClick={handleNext}
+                      disabled={usernameStatus !== 'available' || loading}
                     >
-                      Back
+                      Continue
                     </PixelButton>
-                    <PixelButton
-                      type="submit"
-                      className="flex-1"
-                      disabled={loading}
-                    >
-                      {loading ? 'CREATING...' : 'CREATE_ACCOUNT'}
-                    </PixelButton>
-                  </div>
-                </>
-              )}
-            </form>
-          </PixelCard>
+                  </>
+                ) : (
+                  <>
+                    <div className="space-y-2">
+                      <label className="font-pixel text-xs text-[var(--primary)] flex items-center gap-2">
+                        <User size={14} />
+                        DISPLAY NAME
+                      </label>
+                      <input
+                        type="text"
+                        value={formData.displayName}
+                        onChange={(e) => setFormData({ ...formData, displayName: e.target.value })}
+                        placeholder="Your Name"
+                        className="w-full bg-[var(--background)] border-4 border-[var(--border)] px-4 py-3 font-cyber text-[var(--text)] placeholder:text-[var(--text-muted)] focus:border-[var(--primary)] focus:outline-none"
+                      />
+                    </div>
 
-          <div className="mt-6 text-center space-y-3">
-            <p className="font-cyber text-sm text-[var(--text-muted)]">
-              Already have an account?
-            </p>
-            <Link href="/login">
-              <PixelButton variant="secondary" size="sm">
-                Sign In
-              </PixelButton>
-            </Link>
-          </div>
+                    <div className="space-y-2">
+                      <label className="font-pixel text-xs text-[var(--primary)] flex items-center gap-2">
+                        <Mail size={14} />
+                        EMAIL ADDRESS
+                      </label>
+                      <input
+                        type="email"
+                        value={formData.email}
+                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                        placeholder="you@example.com"
+                        className="w-full bg-[var(--background)] border-4 border-[var(--border)] px-4 py-3 font-cyber text-[var(--text)] placeholder:text-[var(--text-muted)] focus:border-[var(--primary)] focus:outline-none"
+                      />
+                    </div>
 
-          <div className="mt-6 text-center">
-            <Link 
-              href="/"
-              className="inline-flex items-center gap-2 font-pixel text-xs text-[var(--text-muted)] hover:text-[var(--primary)] transition-colors"
-            >
-              <ArrowLeft size={14} />
-              Return to Main
-            </Link>
-          </div>
-        </motion.div>
+                    <div className="space-y-2">
+                      <label className="font-pixel text-xs text-[var(--primary)] flex items-center gap-2">
+                        <Lock size={14} />
+                        PASSWORD KEY
+                      </label>
+                      <input
+                        type="password"
+                        value={formData.password}
+                        onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                        placeholder="Min 6 characters"
+                        className="w-full bg-[var(--background)] border-4 border-[var(--border)] px-4 py-3 font-cyber text-[var(--text)] placeholder:text-[var(--text-muted)] focus:border-[var(--primary)] focus:outline-none"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="font-pixel text-xs text-[var(--primary)] flex items-center gap-2">
+                        <Lock size={14} />
+                        CONFIRM PASSWORD
+                      </label>
+                      <input
+                        type="password"
+                        value={formData.confirmPassword}
+                        onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+                        placeholder="Repeat password"
+                        className="w-full bg-[var(--background)] border-4 border-[var(--border)] px-4 py-3 font-cyber text-[var(--text)] placeholder:text-[var(--text-muted)] focus:border-[var(--primary)] focus:outline-none"
+                      />
+                    </div>
+
+                    <div className="flex gap-3">
+                      <PixelButton
+                        type="button"
+                        variant="secondary"
+                        className="flex-1"
+                        onClick={handleBack}
+                        disabled={loading}
+                      >
+                        Back
+                      </PixelButton>
+                      <PixelButton
+                        type="submit"
+                        className="flex-1"
+                        disabled={loading}
+                      >
+                        {loading ? 'CREATING...' : 'CREATE_ACCOUNT'}
+                      </PixelButton>
+                    </div>
+                  </>
+                )}
+              </form>
+            </PixelCard>
+
+            <div className="mt-6 text-center space-y-3">
+              <p className="font-cyber text-sm text-[var(--text-muted)]">
+                Already have an account?
+              </p>
+              <Link href="/login">
+                <PixelButton variant="secondary" size="sm">
+                  Sign In
+                </PixelButton>
+              </Link>
+            </div>
+
+            <div className="mt-6 text-center">
+              <Link 
+                href="/"
+                className="inline-flex items-center gap-2 font-pixel text-xs text-[var(--text-muted)] hover:text-[var(--primary)] transition-colors"
+              >
+                <ArrowLeft size={14} />
+                Return to Main
+              </Link>
+            </div>
+          </motion.div>
+        </main>
       </div>
     </div>
   )

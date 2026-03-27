@@ -8,10 +8,18 @@ import { PixelButton } from '@/components/ui/PixelButton'
 import { PixelCard } from '@/components/ui/PixelCard'
 import { PixelBackground } from '@/components/layout/PixelBackground'
 import { ScanLine } from '@/components/ui/ScanLine'
-import { Terminal, User, ArrowRight, Sparkles, UserPlus } from 'lucide-react'
+import { Terminal, User, ArrowRight, Sparkles, UserPlus, Home, Info, GraduationCap, FolderOpen, Award, Menu, X } from 'lucide-react'
 
 export default function LandingPage() {
   const [username, setUsername] = useState('')
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+
+  const navItems = [
+    { href: '/', label: 'Home', icon: Home },
+    { href: '#features', label: 'Features', icon: Info },
+    { href: '/login', label: 'Login', icon: User },
+    { href: '/register', label: 'Register', icon: UserPlus },
+  ]
 
   return (
     <div className="min-h-screen relative overflow-hidden" data-theme="green">
@@ -19,27 +27,67 @@ export default function LandingPage() {
       <ScanLine />
       
       <div className="relative z-10 min-h-screen flex flex-col">
-        <header className="p-6 flex justify-between items-center">
+        
+        {/* Header dengan Navigasi */}
+        <header className="p-4 md:p-6 flex justify-between items-center border-b-4 border-[var(--border)] bg-[var(--background)]/80 backdrop-blur">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 bg-[var(--primary)] border-4 border-[var(--background)] flex items-center justify-center animate-pulse-glow">
-              <span className="font-pixel text-[var(--background)] text-lg">P</span>
+            <div className="w-10 h-10 md:w-12 md:h-12 bg-[var(--primary)] border-4 border-[var(--background)] flex items-center justify-center animate-pulse-glow">
+              <span className="font-pixel text-[var(--background)] text-sm md:text-lg">P</span>
             </div>
-            <span className="font-pixel text-[var(--primary)] text-sm hidden sm:block">PORTFOLIO.OS</span>
+            <span className="font-pixel text-[var(--primary)] text-xs md:text-sm hidden sm:block">PORTFOLIO.OS</span>
           </div>
-          <div className="flex items-center gap-3">
-            <Link href="/login">
-              <PixelButton variant="secondary" size="sm">
-                Login
-              </PixelButton>
-            </Link>
-            <Link href="/register">
-              <PixelButton size="sm" className="flex items-center gap-2">
-                <UserPlus size={14} />
-                <span className="hidden sm:inline">Register</span>
-              </PixelButton>
-            </Link>
-          </div>
+
+          {/* Desktop Nav */}
+          <nav className="hidden md:flex items-center gap-2">
+            {navItems.map((item) => {
+              const Icon = item.icon
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className="flex items-center gap-2 px-3 py-2 font-pixel text-xs text-[var(--text)] border-2 border-transparent hover:border-[var(--primary)] hover:text-[var(--primary)] transition-all"
+                >
+                  <Icon size={14} />
+                  {item.label}
+                </Link>
+              )
+            })}
+          </nav>
+
+          {/* Mobile Menu Button */}
+          <button
+            className="md:hidden text-[var(--text)] p-2 border-2 border-[var(--border)]"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          >
+            {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+          </button>
         </header>
+
+        {/* Mobile Nav */}
+        {mobileMenuOpen && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            className="md:hidden bg-[var(--surface)] border-b-4 border-[var(--border)]"
+          >
+            <div className="p-4 space-y-2">
+              {navItems.map((item) => {
+                const Icon = item.icon
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="flex items-center gap-3 px-4 py-3 font-pixel text-xs text-[var(--text)] border-2 border-[var(--border)] hover:border-[var(--primary)]"
+                  >
+                    <Icon size={16} />
+                    {item.label}
+                  </Link>
+                )
+              })}
+            </div>
+          </motion.div>
+        )}
 
         <main className="flex-1 flex items-center justify-center px-4 py-12">
           <div className="max-w-4xl w-full">
@@ -51,7 +99,7 @@ export default function LandingPage() {
             >
               <div className="inline-flex items-center gap-2 px-4 py-2 bg-[var(--surface)] border-2 border-[var(--primary)] mb-6">
                 <Sparkles size={16} className="text-[var(--primary)]" />
-                <span className="font-pixel text-xs text-[var(--primary)]">v2.0 FUTURISTIC MODE</span>
+                <span className="font-pixel text-xs text-[var(--primary)]">v0.1 FUTURISTIC MODE</span>
               </div>
               
               <GlitchText text="8-BIT PORTFOLIO" size="xl" className="mb-4" />
@@ -66,7 +114,7 @@ export default function LandingPage() {
               <div className="space-y-6">
                 <div className="flex items-center gap-3 text-[var(--primary)] mb-4">
                   <Terminal size={20} />
-                  <span className="font-pixel text-xs">ENTER_USERNAME.exe</span>
+                  <span className="font-pixel text-xs">ENTER USERNAME.exe</span>
                 </div>
                 
                 <div className="relative">
@@ -115,7 +163,8 @@ export default function LandingPage() {
               </div>
             </PixelCard>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+            {/* Features Grid */}
+            <div id="features" className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
               {[
                 { icon: User, title: 'Personal Brand', desc: 'Custom username & profile' },
                 { icon: Terminal, title: 'Dynamic Content', desc: 'Editable sections & media' },
@@ -140,7 +189,7 @@ export default function LandingPage() {
 
         <footer className="p-6 text-center border-t-4 border-[var(--border)] bg-[var(--surface)]">
           <p className="font-pixel text-xs text-[var(--text-muted)]">
-            SYSTEM.READY_ PRESS START TO CONTINUE
+            SYSTEM.READY PRESS START TO CONTINUE
           </p>
         </footer>
       </div>
