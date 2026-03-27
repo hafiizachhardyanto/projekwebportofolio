@@ -13,6 +13,7 @@ import { EditModal } from '@/components/ui/EditModal'
 import { MediaUpload } from '@/components/ui/MediaUpload'
 import { Edit, Plus, Trash, GraduationCap, Calendar } from 'lucide-react'
 import { formatDate } from '@/lib/utils'
+import { PageNavigation } from '@/components/layout/PageNavigation'
 
 interface EducationForm {
   id?: string
@@ -117,7 +118,7 @@ export default function EducationPage() {
   }
 
   return (
-    <div className="min-h-screen p-4 md:p-8 pb-32 md:pb-40">
+    <div className="min-h-screen p-4 md:p-8 pb-24 md:pb-32">
       <div className="max-w-4xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -216,6 +217,14 @@ export default function EducationPage() {
           </div>
         </motion.div>
       </div>
+
+      <PageNavigation 
+        username={username} 
+        currentPage="education"
+        showBack={true}
+        showHome={true}
+        showNext={true}
+      />
 
       <EditModal
         isOpen={modalOpen}

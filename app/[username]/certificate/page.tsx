@@ -13,6 +13,7 @@ import { EditModal } from '@/components/ui/EditModal'
 import { MediaUpload } from '@/components/ui/MediaUpload'
 import { Edit, Plus, Trash, Award, ExternalLink, Calendar, Hash } from 'lucide-react'
 import { formatDate } from '@/lib/utils'
+import { PageNavigation } from '@/components/layout/PageNavigation'
 
 interface CertificateForm {
   id?: string
@@ -124,7 +125,7 @@ export default function CertificatesPage() {
   const certificates = data?.certificates || []
 
   return (
-    <div className="min-h-screen p-4 md:p-8">
+    <div className="min-h-screen p-4 md:p-8 pb-24">
       <div className="max-w-6xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -239,6 +240,14 @@ export default function CertificatesPage() {
           )}
         </motion.div>
       </div>
+
+      <PageNavigation 
+        username={username} 
+        currentPage="certificates"
+        showBack={true}
+        showHome={true}
+        showNext={false}
+      />
 
       <EditModal
         isOpen={modalOpen}

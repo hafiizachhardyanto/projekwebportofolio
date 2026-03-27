@@ -11,7 +11,7 @@ import { PixelCard } from '@/components/ui/PixelCard'
 import { PixelBackground } from '@/components/layout/PixelBackground'
 import { GlitchText } from '@/components/ui/GlitchText'
 import { ScanLine } from '@/components/ui/ScanLine'
-import { UserPlus, Mail, Lock, User, AlertTriangle, ArrowLeft, Home, Check, X } from 'lucide-react'
+import { UserPlus, Mail, Lock, User, AlertTriangle, ArrowLeft, Home, Check, X, LogIn } from 'lucide-react'
 
 export default function RegisterPage() {
   const [step, setStep] = useState(1)
@@ -110,38 +110,38 @@ export default function RegisterPage() {
     try {
       const userCredential = await register(formData.email, formData.password, formData.displayName)
       
-await createPortfolio({
-  uid: userCredential.user.uid,
-  username: formData.username,
-  displayName: formData.displayName,
-  email: formData.email,
-  photoURL: '',
-  bio: '',
-  title: 'Digital Creator',
-  location: '',
-  website: '',
-  socialLinks: {
-    github: '',
-    linkedin: '',
-    twitter: '',
-    instagram: ''
-  },
-  theme: {
-    id: 'green',
-    primary: '#00ff41',
-    secondary: '#008f11',
-    accent: '#ff0080',
-    background: '#0a0a0f',
-    surface: '#0f172a',
-    text: '#ffffff',
-    textMuted: '#94a3b8',
-    border: '#1e293b',
-    glow: 'rgba(0, 255, 65, 0.5)',
-    scanline: true,
-    crt: true
-  },
-  font: 'cyber'
-})
+      await createPortfolio({
+        uid: userCredential.user.uid,
+        username: formData.username,
+        displayName: formData.displayName,
+        email: formData.email,
+        photoURL: '',
+        bio: '',
+        title: 'Digital Creator',
+        location: '',
+        website: '',
+        socialLinks: {
+          github: '',
+          linkedin: '',
+          twitter: '',
+          instagram: ''
+        },
+        theme: {
+          id: 'green',
+          primary: '#00ff41',
+          secondary: '#008f11',
+          accent: '#ff0080',
+          background: '#0a0a0f',
+          surface: '#0f172a',
+          text: '#ffffff',
+          textMuted: '#94a3b8',
+          border: '#1e293b',
+          glow: 'rgba(0, 255, 65, 0.5)',
+          scanline: true,
+          crt: true
+        },
+        font: 'cyber'
+      })
 
       router.push(`/${formData.username}`)
     } catch (err: any) {
@@ -164,7 +164,6 @@ await createPortfolio({
       
       <div className="relative z-10 min-h-screen flex flex-col">
         
-        {/* Header dengan Navigasi */}
         <header className="p-4 md:p-6 flex justify-between items-center border-b-4 border-[var(--border)] bg-[var(--background)]/80 backdrop-blur">
           <Link href="/" className="flex items-center gap-3">
             <div className="w-10 h-10 bg-[var(--primary)] border-2 border-[var(--background)] flex items-center justify-center">
@@ -173,10 +172,12 @@ await createPortfolio({
             <span className="font-pixel text-[var(--primary)] text-xs hidden sm:block">PORTFOLIO.OS</span>
           </Link>
           
-          <Link href="/" className="flex items-center gap-2 px-3 py-2 font-pixel text-xs text-[var(--text)] border-2 border-transparent hover:border-[var(--primary)] hover:text-[var(--primary)] transition-all">
-            <Home size={14} />
-            <span className="hidden sm:inline">Home</span>
-          </Link>
+          <div className="flex items-center gap-2">
+            <Link href="/" className="flex items-center gap-2 px-3 py-2 font-pixel text-xs text-[var(--text)] border-2 border-transparent hover:border-[var(--primary)] hover:text-[var(--primary)] transition-all">
+              <Home size={14} />
+              <span className="hidden sm:inline">Home</span>
+            </Link>
+          </div>
         </header>
 
         <main className="flex-1 flex items-center justify-center p-4">
@@ -361,7 +362,8 @@ await createPortfolio({
                 Already have an account?
               </p>
               <Link href="/login">
-                <PixelButton variant="secondary" size="sm">
+                <PixelButton variant="secondary" size="sm" className="flex items-center gap-2 mx-auto">
+                  <LogIn size={14} />
                   Sign In
                 </PixelButton>
               </Link>

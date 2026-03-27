@@ -14,6 +14,7 @@ import { MediaUpload } from '@/components/ui/MediaUpload'
 import { Pencil, Plus, Trash2, ExternalLink, Code2, Star, Calendar, Code } from 'lucide-react'
 import { formatDate } from '@/lib/utils'
 import { Project } from '@/types'
+import { PageNavigation } from '@/components/layout/PageNavigation'
 
 interface ProjectForm {
   id?: string
@@ -138,7 +139,7 @@ export default function ProjectsPage() {
   const projects = data?.projects || []
 
   return (
-    <div className="min-h-screen p-4 md:p-8">
+    <div className="min-h-screen p-4 md:p-8 pb-24">
       <div className="max-w-6xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -202,6 +203,14 @@ export default function ProjectsPage() {
           )}
         </motion.div>
       </div>
+
+      <PageNavigation 
+        username={username} 
+        currentPage="projects"
+        showBack={true}
+        showHome={true}
+        showNext={true}
+      />
 
       <EditModal
         isOpen={modalOpen}

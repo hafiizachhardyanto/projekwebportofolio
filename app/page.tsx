@@ -8,7 +8,7 @@ import { PixelButton } from '@/components/ui/PixelButton'
 import { PixelCard } from '@/components/ui/PixelCard'
 import { PixelBackground } from '@/components/layout/PixelBackground'
 import { ScanLine } from '@/components/ui/ScanLine'
-import { Terminal, User, ArrowRight, Sparkles, UserPlus, Home, Info, GraduationCap, FolderOpen, Award, Menu, X } from 'lucide-react'
+import { Terminal, User, ArrowRight, Sparkles, UserPlus, Home, Info, GraduationCap, FolderOpen, Award, Menu, X, LogIn, ArrowLeft } from 'lucide-react'
 
 export default function LandingPage() {
   const [username, setUsername] = useState('')
@@ -17,7 +17,7 @@ export default function LandingPage() {
   const navItems = [
     { href: '/', label: 'Home', icon: Home },
     { href: '#features', label: 'Features', icon: Info },
-    { href: '/login', label: 'Login', icon: User },
+    { href: '/login', label: 'Login', icon: LogIn },
     { href: '/register', label: 'Register', icon: UserPlus },
   ]
 
@@ -28,16 +28,14 @@ export default function LandingPage() {
       
       <div className="relative z-10 min-h-screen flex flex-col">
         
-        {/* Header dengan Navigasi */}
         <header className="p-4 md:p-6 flex justify-between items-center border-b-4 border-[var(--border)] bg-[var(--background)]/80 backdrop-blur">
-          <div className="flex items-center gap-3">
+          <Link href="/" className="flex items-center gap-3">
             <div className="w-10 h-10 md:w-12 md:h-12 bg-[var(--primary)] border-4 border-[var(--background)] flex items-center justify-center animate-pulse-glow">
               <span className="font-pixel text-[var(--background)] text-sm md:text-lg">P</span>
             </div>
             <span className="font-pixel text-[var(--primary)] text-xs md:text-sm hidden sm:block">PORTFOLIO.OS</span>
-          </div>
+          </Link>
 
-          {/* Desktop Nav */}
           <nav className="hidden md:flex items-center gap-2">
             {navItems.map((item) => {
               const Icon = item.icon
@@ -54,7 +52,6 @@ export default function LandingPage() {
             })}
           </nav>
 
-          {/* Mobile Menu Button */}
           <button
             className="md:hidden text-[var(--text)] p-2 border-2 border-[var(--border)]"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -63,7 +60,6 @@ export default function LandingPage() {
           </button>
         </header>
 
-        {/* Mobile Nav */}
         {mobileMenuOpen && (
           <motion.div
             initial={{ height: 0, opacity: 0 }}
@@ -163,7 +159,6 @@ export default function LandingPage() {
               </div>
             </PixelCard>
 
-            {/* Features Grid */}
             <div id="features" className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
               {[
                 { icon: User, title: 'Personal Brand', desc: 'Custom username & profile' },

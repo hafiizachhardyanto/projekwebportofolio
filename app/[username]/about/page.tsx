@@ -11,7 +11,8 @@ import { PixelCard } from '@/components/ui/PixelCard'
 import { PixelButton } from '@/components/ui/PixelButton'
 import { EditModal } from '@/components/ui/EditModal'
 import { MediaUpload } from '@/components/ui/MediaUpload'
-import { Edit, Plus } from 'lucide-react'
+import { Edit, Plus, Trash } from 'lucide-react'
+import { PageNavigation } from '@/components/layout/PageNavigation'
 
 interface AboutSection {
   id: string
@@ -116,7 +117,7 @@ export default function AboutPage() {
   }
 
   return (
-    <div className="min-h-screen p-4 md:p-8">
+    <div className="min-h-screen p-4 md:p-8 pb-24">
       <div className="max-w-4xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -199,6 +200,14 @@ export default function AboutPage() {
           </PixelCard>
         </motion.div>
       </div>
+
+      <PageNavigation 
+        username={username} 
+        currentPage="about"
+        showBack={true}
+        showHome={true}
+        showNext={true}
+      />
 
       <EditModal
         isOpen={editModalOpen}

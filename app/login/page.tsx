@@ -42,7 +42,6 @@ export default function LoginPage() {
       
       <div className="relative z-10 min-h-screen flex flex-col">
         
-        {/* Header dengan Navigasi */}
         <header className="p-4 md:p-6 flex justify-between items-center border-b-4 border-[var(--border)] bg-[var(--background)]/80 backdrop-blur">
           <Link href="/" className="flex items-center gap-3">
             <div className="w-10 h-10 bg-[var(--primary)] border-2 border-[var(--background)] flex items-center justify-center">
@@ -51,10 +50,12 @@ export default function LoginPage() {
             <span className="font-pixel text-[var(--primary)] text-xs hidden sm:block">PORTFOLIO.OS</span>
           </Link>
           
-          <Link href="/" className="flex items-center gap-2 px-3 py-2 font-pixel text-xs text-[var(--text)] border-2 border-transparent hover:border-[var(--primary)] hover:text-[var(--primary)] transition-all">
-            <Home size={14} />
-            <span className="hidden sm:inline">Home</span>
-          </Link>
+          <div className="flex items-center gap-2">
+            <Link href="/" className="flex items-center gap-2 px-3 py-2 font-pixel text-xs text-[var(--text)] border-2 border-transparent hover:border-[var(--primary)] hover:text-[var(--primary)] transition-all">
+              <Home size={14} />
+              <span className="hidden sm:inline">Home</span>
+            </Link>
+          </div>
         </header>
 
         <main className="flex-1 flex items-center justify-center p-4">
