@@ -11,16 +11,15 @@ import { EditModal } from '@/components/ui/EditModal'
 import { MediaUpload } from '@/components/ui/MediaUpload'
 import { useEdit } from '@/hooks/useEdit'
 import { useState } from 'react'
-import { Globe, MapPin, Pencil, Plus, Link2, Code2 } from 'lucide-react'
+import { Globe, MapPin, Pencil, Link2, Code2 } from 'lucide-react'
 import Link from 'next/link'
-import { saveProfilePhotoToFirestore } from '@/lib/firebase'
 
 export default function HomePage() {
   const params = useParams()
   const username = params.username as string
   const { data } = usePortfolio(username)
   const { user } = useAuth()
-  const { updateProfile, uploadMedia, saving } = useEdit(username)
+  const { updateProfile, saving } = useEdit(username)
   const [editModalOpen, setEditModalOpen] = useState(false)
   const [editData, setEditData] = useState({
     displayName: '',
@@ -30,7 +29,7 @@ export default function HomePage() {
     website: '',
     photoURL: ''
   })
-  const [newPhoto, setNewPhoto] = useState<File | null>(null)
+  const [newPhotoFile, setNewPhotoFile] = useState<File | null>(null)
   const [photoBase64, setPhotoBase64] = useState<string>('')
 
   const isOwner = user?.uid === data?.profile.uid
@@ -45,28 +44,27 @@ export default function HomePage() {
       website: data.profile.website || '',
       photoURL: data.profile.photoURL || ''
     })
-    setNewPhoto(null)
+    setNewPhotoFile(null)
     setPhotoBase64('')
     setEditModalOpen(true)
   }
 
+  const handlePhotoSelect = (file: File | null, base64: string) => {
+    setNewPhotoFile(file)
+    setPhotoBase64(base64)
+  }
+
   const handleSave = async () => {
-    let photoURL = editData.photoURL
-    if (photoBase64 && user?.uid) {
-      await saveProfilePhotoToFirestore(user.uid, photoBase64)
-      photoURL = photoBase64
-    } else if (newPhoto) {
-      photoURL = await uploadMedia(newPhoto)
-    }
+    const photoURL = photoBase64 || editData.photoURL
+
     await updateProfile({
       ...editData,
       photoURL
     })
+    
     setEditModalOpen(false)
-  }
-
-  const handlePhotoUpload = (url: string) => {
-    setPhotoBase64(url)
+    setNewPhotoFile(null)
+    setPhotoBase64('')
   }
 
   if (!data) return null
@@ -350,7 +348,7 @@ export default function HomePage() {
           <div>
             <label className="font-pixel text-xs text-[var(--primary)] block mb-2">PROFILE_PHOTO</label>
             <MediaUpload
-              onUpload={handlePhotoUpload}
+              onFileSelect={handlePhotoSelect}
               type="image"
               currentUrl={editData.photoURL}
             />

@@ -30,7 +30,7 @@ export default function EducationPage() {
   const username = params.username as string
   const { data } = usePortfolio(username)
   const { user } = useAuth()
-  const { addEducation, updateEducation, deleteEducation, uploadMedia } = useEdit(username)
+  const { addEducation, updateEducation, deleteEducation } = useEdit(username)
   const [modalOpen, setModalOpen] = useState(false)
   const [formData, setFormData] = useState<EducationForm>({
     institution: '',
@@ -41,9 +41,9 @@ export default function EducationPage() {
     description: '',
     logo: ''
   })
-  const [newLogo, setNewLogo] = useState<File | null>(null)
+  const [newLogoFile, setNewLogoFile] = useState<File | null>(null)
+  const [newLogoBase64, setNewLogoBase64] = useState<string>('')
   const [isEditing, setIsEditing] = useState(false)
-  const [logoUrl, setLogoUrl] = useState<string>('')
 
   const isOwner = user?.uid === data?.profile.uid
 
@@ -57,8 +57,8 @@ export default function EducationPage() {
       description: '',
       logo: ''
     })
-    setNewLogo(null)
-    setLogoUrl('')
+    setNewLogoFile(null)
+    setNewLogoBase64('')
     setIsEditing(false)
     setModalOpen(true)
   }
@@ -74,17 +74,19 @@ export default function EducationPage() {
       description: edu.description,
       logo: edu.logo
     })
-    setNewLogo(null)
-    setLogoUrl(edu.logo || '')
+    setNewLogoFile(null)
+    setNewLogoBase64('')
     setIsEditing(true)
     setModalOpen(true)
   }
 
+  const handleLogoSelect = (file: File | null, base64: string) => {
+    setNewLogoFile(file)
+    setNewLogoBase64(base64)
+  }
+
   const handleSave = async () => {
-    let finalLogoUrl = logoUrl || formData.logo
-    if (newLogo) {
-      finalLogoUrl = await uploadMedia(newLogo)
-    }
+    const logoData = newLogoBase64 || formData.logo
 
     const dataToSave = {
       institution: formData.institution,
@@ -93,7 +95,7 @@ export default function EducationPage() {
       startDate: formData.startDate,
       endDate: formData.endDate,
       description: formData.description,
-      logo: finalLogoUrl,
+      logo: logoData,
       order: data?.educations.length || 0
     }
 
@@ -104,17 +106,14 @@ export default function EducationPage() {
     }
 
     setModalOpen(false)
+    setNewLogoFile(null)
+    setNewLogoBase64('')
   }
 
   const handleDelete = async (id: string) => {
     if (confirm('Delete this education entry?')) {
       await deleteEducation(id)
     }
-  }
-
-  const handleLogoUpload = (url: string) => {
-    setLogoUrl(url)
-    setNewLogo(null)
   }
 
   return (
@@ -290,9 +289,9 @@ export default function EducationPage() {
           <div>
             <label className="font-pixel text-xs text-[var(--primary)] block mb-2">INSTITUTION LOGO</label>
             <MediaUpload
-              onUpload={handleLogoUpload}
+              onFileSelect={handleLogoSelect}
               type="image"
-              currentUrl={logoUrl || formData.logo}
+              currentUrl={formData.logo}
             />
           </div>
         </div>

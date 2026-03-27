@@ -11,7 +11,7 @@ import { PixelCard } from '@/components/ui/PixelCard'
 import { PixelButton } from '@/components/ui/PixelButton'
 import { EditModal } from '@/components/ui/EditModal'
 import { MediaUpload } from '@/components/ui/MediaUpload'
-import { Edit, Plus, Trash } from 'lucide-react'
+import { Edit, Plus } from 'lucide-react'
 
 interface AboutSection {
   id: string
@@ -27,13 +27,13 @@ export default function AboutPage() {
   const username = params.username as string
   const { data } = usePortfolio(username)
   const { user } = useAuth()
-  const { updateSection, uploadMedia } = useEdit(username)
+  const { updateSection } = useEdit(username)
   const [editModalOpen, setEditModalOpen] = useState(false)
   const [editSection, setEditSection] = useState<AboutSection | null>(null)
-  const [newMedia, setNewMedia] = useState<File | null>(null)
+  const [newMediaFile, setNewMediaFile] = useState<File | null>(null)
+  const [newMediaBase64, setNewMediaBase64] = useState<string>('')
   const [mediaType, setMediaType] = useState<'image' | 'video'>('image')
   const [isCreating, setIsCreating] = useState(false)
-  const [mediaUrl, setMediaUrl] = useState<string>('')
 
   const isOwner = user?.uid === data?.profile.uid
 
@@ -59,9 +59,9 @@ export default function AboutPage() {
 
   const openEdit = (section: AboutSection) => {
     setEditSection(section)
-    setNewMedia(null)
+    setNewMediaFile(null)
+    setNewMediaBase64('')
     setMediaType(section.video ? 'video' : 'image')
-    setMediaUrl(section.video || section.image || '')
     setIsCreating(false)
     setEditModalOpen(true)
   }
@@ -73,20 +73,22 @@ export default function AboutPage() {
       content: '',
       order: displaySections.length + 1
     })
-    setNewMedia(null)
+    setNewMediaFile(null)
+    setNewMediaBase64('')
     setMediaType('image')
-    setMediaUrl('')
     setIsCreating(true)
     setEditModalOpen(true)
+  }
+
+  const handleMediaSelect = (file: File | null, base64: string) => {
+    setNewMediaFile(file)
+    setNewMediaBase64(base64)
   }
 
   const handleSave = async () => {
     if (!editSection) return
 
-    let finalMediaUrl = mediaUrl
-    if (newMedia) {
-      finalMediaUrl = await uploadMedia(newMedia)
-    }
+    const finalMediaUrl = newMediaBase64 || (mediaType === 'video' ? editSection.video : editSection.image) || ''
 
     const media = []
     if (finalMediaUrl) {
@@ -109,11 +111,8 @@ export default function AboutPage() {
     })
 
     setEditModalOpen(false)
-  }
-
-  const handleMediaUpload = (url: string) => {
-    setMediaUrl(url)
-    setNewMedia(null)
+    setNewMediaFile(null)
+    setNewMediaBase64('')
   }
 
   return (
@@ -243,9 +242,9 @@ export default function AboutPage() {
           <div>
             <label className="font-pixel text-xs text-[var(--primary)] block mb-2">MEDIA</label>
             <MediaUpload
-              onUpload={handleMediaUpload}
+              onFileSelect={handleMediaSelect}
               type={mediaType}
-              currentUrl={mediaUrl}
+              currentUrl={mediaType === 'video' ? editSection?.video : editSection?.image}
             />
           </div>
         </div>

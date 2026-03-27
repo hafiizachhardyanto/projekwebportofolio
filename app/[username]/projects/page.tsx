@@ -11,7 +11,7 @@ import { PixelCard } from '@/components/ui/PixelCard'
 import { PixelButton } from '@/components/ui/PixelButton'
 import { EditModal } from '@/components/ui/EditModal'
 import { MediaUpload } from '@/components/ui/MediaUpload'
-import { Pencil, Plus, Trash2, ExternalLink, Code2, Star, Calendar, Code, Link2 } from 'lucide-react'
+import { Pencil, Plus, Trash2, ExternalLink, Code2, Star, Calendar, Code } from 'lucide-react'
 import { formatDate } from '@/lib/utils'
 import { Project } from '@/types'
 
@@ -34,7 +34,7 @@ export default function ProjectsPage() {
   const username = params.username as string
   const { data } = usePortfolio(username)
   const { user } = useAuth()
-  const { addProject, updateProject, deleteProject, uploadMedia } = useEdit(username)
+  const { addProject, updateProject, deleteProject } = useEdit(username)
   const [modalOpen, setModalOpen] = useState(false)
   const [formData, setFormData] = useState<ProjectForm>({
     title: '',
@@ -48,7 +48,8 @@ export default function ProjectsPage() {
     endDate: '',
     featured: false
   })
-  const [newMediaUrl, setNewMediaUrl] = useState<string>('')
+  const [newMediaFile, setNewMediaFile] = useState<File | null>(null)
+  const [newMediaBase64, setNewMediaBase64] = useState<string>('')
   const [mediaType, setMediaType] = useState<'image' | 'video'>('image')
   const [isEditing, setIsEditing] = useState(false)
 
@@ -67,7 +68,8 @@ export default function ProjectsPage() {
       endDate: '',
       featured: false
     })
-    setNewMediaUrl('')
+    setNewMediaFile(null)
+    setNewMediaBase64('')
     setMediaType('image')
     setIsEditing(false)
     setModalOpen(true)
@@ -88,20 +90,26 @@ export default function ProjectsPage() {
       featured: project.featured
     })
     setMediaType(project.video ? 'video' : 'image')
-    setNewMediaUrl('')
+    setNewMediaFile(null)
+    setNewMediaBase64('')
     setIsEditing(true)
     setModalOpen(true)
   }
 
+  const handleMediaSelect = (file: File | null, base64: string) => {
+    setNewMediaFile(file)
+    setNewMediaBase64(base64)
+  }
+
   const handleSave = async () => {
-    let mediaUrl = newMediaUrl || (mediaType === 'video' ? formData.video : formData.image)
+    const mediaData = newMediaBase64 || (mediaType === 'image' ? formData.image : formData.video)
 
     const dataToSave: Omit<Project, 'id'> = {
       title: formData.title,
       description: formData.description,
       technologies: formData.technologies.split(',').map(t => t.trim()).filter(Boolean),
-      image: mediaType === 'image' ? mediaUrl : formData.image,
-      video: mediaType === 'video' ? mediaUrl : formData.video,
+      image: mediaType === 'image' ? mediaData : formData.image,
+      video: mediaType === 'video' ? mediaData : formData.video,
       githubUrl: formData.githubUrl,
       liveUrl: formData.liveUrl,
       startDate: formData.startDate,
@@ -117,7 +125,8 @@ export default function ProjectsPage() {
     }
 
     setModalOpen(false)
-    setNewMediaUrl('')
+    setNewMediaFile(null)
+    setNewMediaBase64('')
   }
 
   const handleDelete = async (id: string) => {
@@ -263,7 +272,7 @@ export default function ProjectsPage() {
               {mediaType === 'video' ? 'PROJECT_VIDEO' : 'PROJECT_IMAGE'}
             </label>
             <MediaUpload
-              onUpload={setNewMediaUrl}
+              onFileSelect={handleMediaSelect}
               type={mediaType}
               currentUrl={mediaType === 'video' ? formData.video : formData.image}
             />

@@ -1,76 +1,113 @@
 'use client'
 
-import { useState } from 'react'
-import { ImageIcon, Video, Link2, X } from 'lucide-react'
+import { useState, useRef } from 'react'
+import { ImageIcon, Video, Upload, X, FileUp } from 'lucide-react'
 import { PixelButton } from './PixelButton'
 
 interface MediaUploadProps {
-  onUpload: (url: string) => void
+  onFileSelect: (file: File | null, base64Data: string) => void
   type?: 'image' | 'video'
   currentUrl?: string
   onClear?: () => void
 }
 
-export function MediaUpload({ onUpload, type = 'image', currentUrl, onClear }: MediaUploadProps) {
-  const [url, setUrl] = useState<string>(currentUrl || '')
+const MAX_FILE_SIZE = 1 * 1024 * 1024 // 1MB limit for Firestore
+
+export function MediaUpload({ onFileSelect, type = 'image', currentUrl, onClear }: MediaUploadProps) {
+  const [previewUrl, setPreviewUrl] = useState<string>(currentUrl || '')
   const [error, setError] = useState('')
+  const [isDragging, setIsDragging] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
-  const validateUrl = (inputUrl: string): boolean => {
+  const fileToBase64 = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader()
+      reader.readAsDataURL(file)
+      reader.onload = () => resolve(reader.result as string)
+      reader.onerror = reject
+    })
+  }
+
+  const validateFile = (file: File): boolean => {
     setError('')
-    
-    if (!inputUrl.trim()) {
-      setError('URL cannot be empty')
+
+    if (file.size > MAX_FILE_SIZE) {
+      setError(`File size must be less than 1MB (current: ${(file.size / 1024 / 1024).toFixed(2)}MB)`)
       return false
     }
 
-    try {
-      new URL(inputUrl)
-    } catch {
-      setError('Please enter a valid URL')
-      return false
-    }
+    const validTypes = type === 'image'
+      ? ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml']
+      : ['video/mp4', 'video/webm', 'video/quicktime', 'video/avi']
 
-    const validExtensions = type === 'image' 
-      ? ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg']
-      : ['.mp4', '.webm', '.mov', '.avi']
-    
-    const hasValidExt = validExtensions.some(ext => 
-      inputUrl.toLowerCase().endsWith(ext) || 
-      inputUrl.toLowerCase().includes(ext)
-    )
-    
-    if (!hasValidExt) {
-      setError(`URL should be a valid ${type} link`)
+    if (!validTypes.includes(file.type)) {
+      setError(`Invalid file type. Supported: ${type === 'video' ? 'MP4, WebM, MOV' : 'JPG, PNG, GIF, WebP, SVG'}`)
       return false
     }
 
     return true
   }
 
-  const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newUrl = e.target.value
-    setUrl(newUrl)
-    
-    if (validateUrl(newUrl)) {
-      onUpload(newUrl)
+  const handleFileChange = async (file: File | null) => {
+    if (!file) return
+
+    if (!validateFile(file)) {
+      onFileSelect(null, '')
+      return
+    }
+
+    try {
+      const base64 = await fileToBase64(file)
+      setPreviewUrl(base64)
+      onFileSelect(file, base64)
+      setError('')
+    } catch {
+      setError('Failed to process file')
+      onFileSelect(null, '')
     }
   }
 
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] || null
+    handleFileChange(file)
+  }
+
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault()
+    setIsDragging(false)
+    const file = e.dataTransfer.files[0]
+    if (file) handleFileChange(file)
+  }
+
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault()
+    setIsDragging(true)
+  }
+
+  const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault()
+    setIsDragging(false)
+  }
+
   const handleClear = () => {
-    setUrl('')
+    setPreviewUrl('')
     setError('')
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ''
+    }
+    onFileSelect(null, '')
     if (onClear) onClear()
   }
 
-  const isVideo = type === 'video' || url.match(/\.(mp4|webm|mov|avi)$/i)
+  const isVideo = type === 'video' || previewUrl.match(/^data:video\//) || previewUrl.match(/\.(mp4|webm|mov|avi)$/i)
 
   return (
     <div className="space-y-4">
-      {url && validateUrl(url) && (
+      {previewUrl && (
         <div className="relative border-4 border-[var(--border)] overflow-hidden bg-[var(--background)]">
           {isVideo ? (
             <video 
-              src={url} 
+              src={previewUrl} 
               className="w-full h-48 object-cover" 
               controls 
               muted
@@ -78,7 +115,7 @@ export function MediaUpload({ onUpload, type = 'image', currentUrl, onClear }: M
             />
           ) : (
             <img 
-              src={url} 
+              src={previewUrl} 
               alt="Preview" 
               className="w-full h-48 object-cover"
               onError={() => setError('Failed to load image')}
@@ -94,34 +131,39 @@ export function MediaUpload({ onUpload, type = 'image', currentUrl, onClear }: M
         </div>
       )}
 
-      <div>
-        <label className="font-pixel text-xs text-[var(--primary)] block mb-2 flex items-center gap-2">
-          {type === 'video' ? <Video size={14} /> : <ImageIcon size={14} />}
-          {type === 'video' ? 'VIDEO_URL' : 'IMAGE_URL'}
-        </label>
-        
-        <div className="flex gap-2">
-          <div className="relative flex-1">
-            <Link2 size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" />
-            <input
-              type="url"
-              value={url}
-              onChange={handleUrlChange}
-              placeholder={`Enter ${type} URL (https://...)`}
-              className="w-full bg-[var(--background)] border-4 border-[var(--border)] pl-10 pr-4 py-3 font-cyber text-[var(--text)] focus:border-[var(--primary)] focus:outline-none"
-            />
+      <div
+        onDrop={handleDrop}
+        onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
+        onClick={() => fileInputRef.current?.click()}
+        className={`
+          border-4 border-dashed cursor-pointer transition-all
+          ${isDragging 
+            ? 'border-[var(--primary)] bg-[var(--primary)]/10' 
+            : 'border-[var(--border)] hover:border-[var(--primary)]/50'
+          }
+          ${previewUrl ? 'p-4' : 'p-8'}
+        `}
+      >
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept={type === 'video' ? 'video/*' : 'image/*'}
+          onChange={handleInputChange}
+          className="hidden"
+        />
+
+        <div className="flex flex-col items-center gap-3 text-[var(--text-muted)]">
+          <FileUp size={32} className={isDragging ? 'text-[var(--primary)]' : ''} />
+          <div className="text-center">
+            <p className="font-pixel text-xs mb-1">
+              {isDragging ? 'DROP_FILE_HERE' : 'CLICK_OR_DRAG_FILE'}
+            </p>
+            <p className="font-cyber text-xs opacity-70">
+              Max size: 1MB | {type === 'video' ? 'MP4, WebM, MOV' : 'JPG, PNG, GIF, WebP'}
+            </p>
           </div>
-          
-          {url && (
-            <PixelButton variant="danger" size="sm" onClick={handleClear}>
-              Clear
-            </PixelButton>
-          )}
         </div>
-        
-        <p className="mt-2 font-pixel text-xs text-[var(--text-muted)]">
-          Supported: {type === 'video' ? 'MP4, WebM, MOV' : 'JPG, PNG, GIF, WebP, SVG'}
-        </p>
       </div>
 
       {error && (

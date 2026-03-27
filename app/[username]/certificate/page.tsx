@@ -30,7 +30,7 @@ export default function CertificatesPage() {
   const username = params.username as string
   const { data } = usePortfolio(username)
   const { user } = useAuth()
-  const { addCertificate, updateCertificate, deleteCertificate, uploadMedia } = useEdit(username)
+  const { addCertificate, updateCertificate, deleteCertificate } = useEdit(username)
   const [modalOpen, setModalOpen] = useState(false)
   const [selectedCert, setSelectedCert] = useState<any>(null)
   const [formData, setFormData] = useState<CertificateForm>({
@@ -42,9 +42,9 @@ export default function CertificatesPage() {
     credentialUrl: '',
     image: ''
   })
-  const [newImage, setNewImage] = useState<File | null>(null)
+  const [newImageFile, setNewImageFile] = useState<File | null>(null)
+  const [newImageBase64, setNewImageBase64] = useState<string>('')
   const [isEditing, setIsEditing] = useState(false)
-  const [imageUrl, setImageUrl] = useState<string>('')
 
   const isOwner = user?.uid === data?.profile.uid
 
@@ -58,8 +58,8 @@ export default function CertificatesPage() {
       credentialUrl: '',
       image: ''
     })
-    setNewImage(null)
-    setImageUrl('')
+    setNewImageFile(null)
+    setNewImageBase64('')
     setIsEditing(false)
     setModalOpen(true)
   }
@@ -75,8 +75,8 @@ export default function CertificatesPage() {
       credentialUrl: cert.credentialUrl,
       image: cert.image
     })
-    setNewImage(null)
-    setImageUrl(cert.image || '')
+    setNewImageFile(null)
+    setNewImageBase64('')
     setIsEditing(true)
     setModalOpen(true)
   }
@@ -85,11 +85,13 @@ export default function CertificatesPage() {
     setSelectedCert(cert)
   }
 
+  const handleImageSelect = (file: File | null, base64: string) => {
+    setNewImageFile(file)
+    setNewImageBase64(base64)
+  }
+
   const handleSave = async () => {
-    let finalImageUrl = imageUrl || formData.image
-    if (newImage) {
-      finalImageUrl = await uploadMedia(newImage)
-    }
+    const imageData = newImageBase64 || formData.image
 
     const dataToSave = {
       name: formData.name,
@@ -98,7 +100,7 @@ export default function CertificatesPage() {
       expiryDate: formData.expiryDate,
       credentialId: formData.credentialId,
       credentialUrl: formData.credentialUrl,
-      image: finalImageUrl,
+      image: imageData,
       order: data?.certificates.length || 0
     }
 
@@ -109,17 +111,14 @@ export default function CertificatesPage() {
     }
 
     setModalOpen(false)
+    setNewImageFile(null)
+    setNewImageBase64('')
   }
 
   const handleDelete = async (id: string) => {
     if (confirm('Delete this certificate?')) {
       await deleteCertificate(id)
     }
-  }
-
-  const handleImageUpload = (url: string) => {
-    setImageUrl(url)
-    setNewImage(null)
   }
 
   const certificates = data?.certificates || []
@@ -312,9 +311,9 @@ export default function CertificatesPage() {
           <div>
             <label className="font-pixel text-xs text-[var(--primary)] block mb-2">CERTIFICATE_IMAGE</label>
             <MediaUpload
-              onUpload={handleImageUpload}
+              onFileSelect={handleImageSelect}
               type="image"
-              currentUrl={imageUrl || formData.image}
+              currentUrl={formData.image}
             />
           </div>
         </div>

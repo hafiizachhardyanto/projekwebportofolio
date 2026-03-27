@@ -4,7 +4,6 @@ import { useState } from 'react'
 import { db } from '@/lib/firebase'
 import { 
   doc, 
-  setDoc, 
   updateDoc, 
   deleteDoc,
   addDoc,
@@ -14,15 +13,6 @@ import { UserProfile, Education, Project, Certificate, SectionContent } from '@/
 
 export function useEdit(username: string) {
   const [saving, setSaving] = useState(false)
-
-  const fileToBase64 = (file: File): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader()
-      reader.readAsDataURL(file)
-      reader.onload = () => resolve(reader.result as string)
-      reader.onerror = error => reject(error)
-    })
-  }
 
   const updateProfile = async (data: Partial<UserProfile>) => {
     setSaving(true)
@@ -87,11 +77,6 @@ export function useEdit(username: string) {
     setSaving(false)
   }
 
-  const uploadMedia = async (file: File): Promise<string> => {
-    const base64 = await fileToBase64(file)
-    return base64
-  }
-
   const updateSection = async (sectionId: string, data: Partial<SectionContent>) => {
     setSaving(true)
     await updateDoc(doc(db, 'portfolios', username, 'sections', sectionId), data)
@@ -110,7 +95,6 @@ export function useEdit(username: string) {
     addCertificate,
     updateCertificate,
     deleteCertificate,
-    uploadMedia,
     updateSection
   }
 }
