@@ -43,6 +43,7 @@ export default function EducationPage() {
   })
   const [newLogo, setNewLogo] = useState<File | null>(null)
   const [isEditing, setIsEditing] = useState(false)
+  const [logoUrl, setLogoUrl] = useState<string>('')
 
   const isOwner = user?.uid === data?.profile.uid
 
@@ -57,6 +58,7 @@ export default function EducationPage() {
       logo: ''
     })
     setNewLogo(null)
+    setLogoUrl('')
     setIsEditing(false)
     setModalOpen(true)
   }
@@ -73,14 +75,15 @@ export default function EducationPage() {
       logo: edu.logo
     })
     setNewLogo(null)
+    setLogoUrl(edu.logo || '')
     setIsEditing(true)
     setModalOpen(true)
   }
 
   const handleSave = async () => {
-    let logoUrl = formData.logo
+    let finalLogoUrl = logoUrl || formData.logo
     if (newLogo) {
-      logoUrl = await uploadMedia(newLogo)
+      finalLogoUrl = await uploadMedia(newLogo)
     }
 
     const dataToSave = {
@@ -90,7 +93,7 @@ export default function EducationPage() {
       startDate: formData.startDate,
       endDate: formData.endDate,
       description: formData.description,
-      logo: logoUrl,
+      logo: finalLogoUrl,
       order: data?.educations.length || 0
     }
 
@@ -109,8 +112,13 @@ export default function EducationPage() {
     }
   }
 
+  const handleLogoUpload = (url: string) => {
+    setLogoUrl(url)
+    setNewLogo(null)
+  }
+
   return (
-    <div className="min-h-screen p-4 md:p-8">
+    <div className="min-h-screen p-4 md:p-8 pb-32 md:pb-40">
       <div className="max-w-4xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -282,9 +290,9 @@ export default function EducationPage() {
           <div>
             <label className="font-pixel text-xs text-[var(--primary)] block mb-2">INSTITUTION LOGO</label>
             <MediaUpload
-              onUpload={setNewLogo}
+              onUpload={handleLogoUpload}
               type="image"
-              currentUrl={formData.logo}
+              currentUrl={logoUrl || formData.logo}
             />
           </div>
         </div>

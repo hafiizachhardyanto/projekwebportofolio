@@ -44,6 +44,7 @@ export default function CertificatesPage() {
   })
   const [newImage, setNewImage] = useState<File | null>(null)
   const [isEditing, setIsEditing] = useState(false)
+  const [imageUrl, setImageUrl] = useState<string>('')
 
   const isOwner = user?.uid === data?.profile.uid
 
@@ -58,6 +59,7 @@ export default function CertificatesPage() {
       image: ''
     })
     setNewImage(null)
+    setImageUrl('')
     setIsEditing(false)
     setModalOpen(true)
   }
@@ -74,6 +76,7 @@ export default function CertificatesPage() {
       image: cert.image
     })
     setNewImage(null)
+    setImageUrl(cert.image || '')
     setIsEditing(true)
     setModalOpen(true)
   }
@@ -83,9 +86,9 @@ export default function CertificatesPage() {
   }
 
   const handleSave = async () => {
-    let imageUrl = formData.image
+    let finalImageUrl = imageUrl || formData.image
     if (newImage) {
-      imageUrl = await uploadMedia(newImage)
+      finalImageUrl = await uploadMedia(newImage)
     }
 
     const dataToSave = {
@@ -95,7 +98,7 @@ export default function CertificatesPage() {
       expiryDate: formData.expiryDate,
       credentialId: formData.credentialId,
       credentialUrl: formData.credentialUrl,
-      image: imageUrl,
+      image: finalImageUrl,
       order: data?.certificates.length || 0
     }
 
@@ -112,6 +115,11 @@ export default function CertificatesPage() {
     if (confirm('Delete this certificate?')) {
       await deleteCertificate(id)
     }
+  }
+
+  const handleImageUpload = (url: string) => {
+    setImageUrl(url)
+    setNewImage(null)
   }
 
   const certificates = data?.certificates || []
@@ -304,9 +312,9 @@ export default function CertificatesPage() {
           <div>
             <label className="font-pixel text-xs text-[var(--primary)] block mb-2">CERTIFICATE_IMAGE</label>
             <MediaUpload
-              onUpload={setNewImage}
+              onUpload={handleImageUpload}
               type="image"
-              currentUrl={formData.image}
+              currentUrl={imageUrl || formData.image}
             />
           </div>
         </div>

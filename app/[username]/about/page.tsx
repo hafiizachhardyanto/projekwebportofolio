@@ -33,6 +33,7 @@ export default function AboutPage() {
   const [newMedia, setNewMedia] = useState<File | null>(null)
   const [mediaType, setMediaType] = useState<'image' | 'video'>('image')
   const [isCreating, setIsCreating] = useState(false)
+  const [mediaUrl, setMediaUrl] = useState<string>('')
 
   const isOwner = user?.uid === data?.profile.uid
 
@@ -60,6 +61,7 @@ export default function AboutPage() {
     setEditSection(section)
     setNewMedia(null)
     setMediaType(section.video ? 'video' : 'image')
+    setMediaUrl(section.video || section.image || '')
     setIsCreating(false)
     setEditModalOpen(true)
   }
@@ -73,6 +75,7 @@ export default function AboutPage() {
     })
     setNewMedia(null)
     setMediaType('image')
+    setMediaUrl('')
     setIsCreating(true)
     setEditModalOpen(true)
   }
@@ -80,18 +83,18 @@ export default function AboutPage() {
   const handleSave = async () => {
     if (!editSection) return
 
-    let mediaUrl = mediaType === 'video' ? editSection.video : editSection.image
+    let finalMediaUrl = mediaUrl
     if (newMedia) {
-      mediaUrl = await uploadMedia(newMedia)
+      finalMediaUrl = await uploadMedia(newMedia)
     }
 
     const media = []
-    if (mediaUrl) {
+    if (finalMediaUrl) {
       media.push({
         id: Date.now().toString(),
         type: mediaType,
-        url: mediaUrl,
-        thumbnail: mediaUrl,
+        url: finalMediaUrl,
+        thumbnail: finalMediaUrl,
         caption: '',
         order: 1
       })
@@ -106,6 +109,11 @@ export default function AboutPage() {
     })
 
     setEditModalOpen(false)
+  }
+
+  const handleMediaUpload = (url: string) => {
+    setMediaUrl(url)
+    setNewMedia(null)
   }
 
   return (
@@ -235,9 +243,9 @@ export default function AboutPage() {
           <div>
             <label className="font-pixel text-xs text-[var(--primary)] block mb-2">MEDIA</label>
             <MediaUpload
-              onUpload={setNewMedia}
+              onUpload={handleMediaUpload}
               type={mediaType}
-              currentUrl={mediaType === 'video' ? editSection?.video : editSection?.image}
+              currentUrl={mediaUrl}
             />
           </div>
         </div>

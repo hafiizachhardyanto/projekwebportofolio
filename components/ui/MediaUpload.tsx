@@ -1,132 +1,134 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState } from 'react'
+import { ImageIcon, Video, Link2, X } from 'lucide-react'
 import { PixelButton } from './PixelButton'
-import { Upload, Image as ImageIcon, Video, X } from 'lucide-react'
 
 interface MediaUploadProps {
-  onUpload: (file: File) => void
-  accept?: string
-  type?: 'image' | 'video' | 'both'
+  onUpload: (url: string) => void
+  type?: 'image' | 'video'
   currentUrl?: string
   onClear?: () => void
 }
 
-export function MediaUpload({ onUpload, type = 'both', currentUrl, onClear }: MediaUploadProps) {
-  const [preview, setPreview] = useState<string | null>(currentUrl || null)
-  const [dragging, setDragging] = useState(false)
+export function MediaUpload({ onUpload, type = 'image', currentUrl, onClear }: MediaUploadProps) {
+  const [url, setUrl] = useState<string>(currentUrl || '')
   const [error, setError] = useState('')
-  const inputRef = useRef<HTMLInputElement>(null)
 
-  const MAX_SIZE_MB = 5
-
-  const acceptTypes = {
-    image: 'image/*',
-    video: 'video/*',
-    both: 'image/*,video/*'
-  }
-
-  const validateFile = (file: File): boolean => {
+  const validateUrl = (inputUrl: string): boolean => {
     setError('')
     
-    if (file.size > MAX_SIZE_MB * 1024 * 1024) {
-      setError(`File too large. Max ${MAX_SIZE_MB}MB`)
+    if (!inputUrl.trim()) {
+      setError('URL cannot be empty')
       return false
     }
 
-    const validTypes = type === 'image' ? ['image/'] : type === 'video' ? ['video/'] : ['image/', 'video/']
-    const isValid = validTypes.some(t => file.type.startsWith(t))
+    try {
+      new URL(inputUrl)
+    } catch {
+      setError('Please enter a valid URL')
+      return false
+    }
+
+    const validExtensions = type === 'image' 
+      ? ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg']
+      : ['.mp4', '.webm', '.mov', '.avi']
     
-    if (!isValid) {
-      setError(`Invalid file type. Please upload ${type === 'both' ? 'image or video' : type}`)
+    const hasValidExt = validExtensions.some(ext => 
+      inputUrl.toLowerCase().endsWith(ext) || 
+      inputUrl.toLowerCase().includes(ext)
+    )
+    
+    if (!hasValidExt) {
+      setError(`URL should be a valid ${type} link`)
       return false
     }
 
     return true
   }
 
-  const handleFile = (file: File) => {
-    if (!validateFile(file)) return
+  const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newUrl = e.target.value
+    setUrl(newUrl)
     
-    const url = URL.createObjectURL(file)
-    setPreview(url)
-    onUpload(file)
-  }
-
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault()
-    setDragging(false)
-    const file = e.dataTransfer.files[0]
-    if (file) handleFile(file)
-  }
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (file) handleFile(file)
+    if (validateUrl(newUrl)) {
+      onUpload(newUrl)
+    }
   }
 
   const handleClear = () => {
-    setPreview(null)
+    setUrl('')
     setError('')
     if (onClear) onClear()
   }
 
+  const isVideo = type === 'video' || url.match(/\.(mp4|webm|mov|avi)$/i)
+
   return (
-    <div>
-      <div
-        className={`border-4 border-dashed p-6 text-center transition-colors ${
-          dragging ? 'border-[var(--primary)] bg-[var(--primary)]/10' : 'border-[var(--border)]'
-        }`}
-        onDragOver={(e) => { e.preventDefault(); setDragging(true) }}
-        onDragLeave={() => setDragging(false)}
-        onDrop={handleDrop}
-      >
-        <input
-          ref={inputRef}
-          type="file"
-          accept={acceptTypes[type]}
-          onChange={handleChange}
-          className="hidden"
-        />
+    <div className="space-y-4">
+      {url && validateUrl(url) && (
+        <div className="relative border-4 border-[var(--border)] overflow-hidden bg-[var(--background)]">
+          {isVideo ? (
+            <video 
+              src={url} 
+              className="w-full h-48 object-cover" 
+              controls 
+              muted
+              onError={() => setError('Failed to load video')}
+            />
+          ) : (
+            <img 
+              src={url} 
+              alt="Preview" 
+              className="w-full h-48 object-cover"
+              onError={() => setError('Failed to load image')}
+            />
+          )}
+          
+          <button
+            onClick={handleClear}
+            className="absolute top-2 right-2 p-2 bg-[var(--accent)] text-white border-2 border-[var(--background)] hover:scale-110 transition-transform"
+          >
+            <X size={14} />
+          </button>
+        </div>
+      )}
+
+      <div>
+        <label className="font-pixel text-xs text-[var(--primary)] block mb-2 flex items-center gap-2">
+          {type === 'video' ? <Video size={14} /> : <ImageIcon size={14} />}
+          {type === 'video' ? 'VIDEO_URL' : 'IMAGE_URL'}
+        </label>
         
-        {preview ? (
-          <div className="space-y-4">
-            {preview.startsWith('data:video') || preview.endsWith('.mp4') || preview.includes('video') ? (
-              <video src={preview} className="max-h-48 mx-auto rounded border-2 border-[var(--border)]" controls />
-            ) : (
-              <img src={preview} alt="Preview" className="max-h-48 mx-auto rounded border-2 border-[var(--border)]" />
-            )}
-            <div className="flex justify-center gap-3">
-              <PixelButton variant="secondary" size="sm" onClick={() => inputRef.current?.click()}>
-                Change File
-              </PixelButton>
-              <PixelButton variant="danger" size="sm" onClick={handleClear} className="flex items-center gap-2">
-                <X size={14} />
-                Remove
-              </PixelButton>
-            </div>
+        <div className="flex gap-2">
+          <div className="relative flex-1">
+            <Link2 size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" />
+            <input
+              type="url"
+              value={url}
+              onChange={handleUrlChange}
+              placeholder={`Enter ${type} URL (https://...)`}
+              className="w-full bg-[var(--background)] border-4 border-[var(--border)] pl-10 pr-4 py-3 font-cyber text-[var(--text)] focus:border-[var(--primary)] focus:outline-none"
+            />
           </div>
-        ) : (
-          <div className="space-y-4">
-            <div className="flex justify-center gap-4 text-[var(--text-muted)]">
-              <ImageIcon size={32} />
-              <Video size={32} />
-            </div>
-            <p className="font-retro text-lg text-[var(--text-muted)]">
-              Drag & drop or click to upload
-            </p>
-            <p className="font-pixel text-xs text-[var(--text-muted)]">
-              Max {MAX_SIZE_MB}MB
-            </p>
-            <PixelButton size="sm" onClick={() => inputRef.current?.click()}>
-              Select File
+          
+          {url && (
+            <PixelButton variant="danger" size="sm" onClick={handleClear}>
+              Clear
             </PixelButton>
-          </div>
-        )}
+          )}
+        </div>
+        
+        <p className="mt-2 font-pixel text-xs text-[var(--text-muted)]">
+          Supported: {type === 'video' ? 'MP4, WebM, MOV' : 'JPG, PNG, GIF, WebP, SVG'}
+        </p>
       </div>
-      
+
       {error && (
-        <p className="mt-2 font-pixel text-xs text-[var(--accent)]">{error}</p>
+        <p className="font-pixel text-xs text-[var(--accent)] flex items-center gap-2">
+          <X size={12} />
+          {error}
+        </p>
       )}
     </div>
   )

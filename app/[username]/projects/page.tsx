@@ -48,7 +48,7 @@ export default function ProjectsPage() {
     endDate: '',
     featured: false
   })
-  const [newMedia, setNewMedia] = useState<File | null>(null)
+  const [newMediaUrl, setNewMediaUrl] = useState<string>('')
   const [mediaType, setMediaType] = useState<'image' | 'video'>('image')
   const [isEditing, setIsEditing] = useState(false)
 
@@ -67,7 +67,7 @@ export default function ProjectsPage() {
       endDate: '',
       featured: false
     })
-    setNewMedia(null)
+    setNewMediaUrl('')
     setMediaType('image')
     setIsEditing(false)
     setModalOpen(true)
@@ -88,16 +88,13 @@ export default function ProjectsPage() {
       featured: project.featured
     })
     setMediaType(project.video ? 'video' : 'image')
-    setNewMedia(null)
+    setNewMediaUrl('')
     setIsEditing(true)
     setModalOpen(true)
   }
 
   const handleSave = async () => {
-    let mediaUrl = ''
-    if (newMedia) {
-      mediaUrl = await uploadMedia(newMedia)
-    }
+    let mediaUrl = newMediaUrl || (mediaType === 'video' ? formData.video : formData.image)
 
     const dataToSave: Omit<Project, 'id'> = {
       title: formData.title,
@@ -120,6 +117,7 @@ export default function ProjectsPage() {
     }
 
     setModalOpen(false)
+    setNewMediaUrl('')
   }
 
   const handleDelete = async (id: string) => {
@@ -265,7 +263,7 @@ export default function ProjectsPage() {
               {mediaType === 'video' ? 'PROJECT_VIDEO' : 'PROJECT_IMAGE'}
             </label>
             <MediaUpload
-              onUpload={setNewMedia}
+              onUpload={setNewMediaUrl}
               type={mediaType}
               currentUrl={mediaType === 'video' ? formData.video : formData.image}
             />

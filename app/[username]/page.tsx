@@ -13,6 +13,7 @@ import { useEdit } from '@/hooks/useEdit'
 import { useState } from 'react'
 import { Globe, MapPin, Pencil, Plus, Link2, Code2 } from 'lucide-react'
 import Link from 'next/link'
+import { saveProfilePhotoToFirestore } from '@/lib/firebase'
 
 export default function HomePage() {
   const params = useParams()
@@ -30,6 +31,7 @@ export default function HomePage() {
     photoURL: ''
   })
   const [newPhoto, setNewPhoto] = useState<File | null>(null)
+  const [photoBase64, setPhotoBase64] = useState<string>('')
 
   const isOwner = user?.uid === data?.profile.uid
 
@@ -44,12 +46,16 @@ export default function HomePage() {
       photoURL: data.profile.photoURL || ''
     })
     setNewPhoto(null)
+    setPhotoBase64('')
     setEditModalOpen(true)
   }
 
   const handleSave = async () => {
     let photoURL = editData.photoURL
-    if (newPhoto) {
+    if (photoBase64 && user?.uid) {
+      await saveProfilePhotoToFirestore(user.uid, photoBase64)
+      photoURL = photoBase64
+    } else if (newPhoto) {
       photoURL = await uploadMedia(newPhoto)
     }
     await updateProfile({
@@ -57,6 +63,10 @@ export default function HomePage() {
       photoURL
     })
     setEditModalOpen(false)
+  }
+
+  const handlePhotoUpload = (url: string) => {
+    setPhotoBase64(url)
   }
 
   if (!data) return null
@@ -340,7 +350,7 @@ export default function HomePage() {
           <div>
             <label className="font-pixel text-xs text-[var(--primary)] block mb-2">PROFILE_PHOTO</label>
             <MediaUpload
-              onUpload={setNewPhoto}
+              onUpload={handlePhotoUpload}
               type="image"
               currentUrl={editData.photoURL}
             />
