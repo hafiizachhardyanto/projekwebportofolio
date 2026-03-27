@@ -11,7 +11,7 @@ import { PixelCard } from '@/components/ui/PixelCard'
 import { PixelButton } from '@/components/ui/PixelButton'
 import { EditModal } from '@/components/ui/EditModal'
 import { MediaUpload } from '@/components/ui/MediaUpload'
-import { Edit, Plus, Trash, ExternalLink, Github, Star, Calendar, Code } from 'lucide-react'
+import { Pencil, Plus, Trash2, ExternalLink, Code2, Star, Calendar, Code, Link2 } from 'lucide-react'
 import { formatDate } from '@/lib/utils'
 import { Project } from '@/types'
 
@@ -337,13 +337,13 @@ function ProjectCard({
             onClick={onEdit}
             className="p-2 bg-[var(--primary)] text-[var(--background)] border-2 border-[var(--background)] hover:scale-110 transition-transform"
           >
-            <Edit size={14} />
+            <Pencil size={14} />
           </button>
           <button
             onClick={onDelete}
             className="p-2 bg-[var(--accent)] text-white border-2 border-[var(--background)] hover:scale-110 transition-transform"
           >
-            <Trash size={14} />
+            <Trash2 size={14} />
           </button>
         </div>
       )}
@@ -420,7 +420,7 @@ function ProjectCard({
               rel="noopener noreferrer"
               className="flex items-center gap-2 text-[var(--text-muted)] hover:text-[var(--primary)] transition-colors font-cyber text-sm"
             >
-              <Github size={16} />
+              <Code2 size={16} />
               Code
             </a>
           )}

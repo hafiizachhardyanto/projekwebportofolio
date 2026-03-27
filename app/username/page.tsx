@@ -11,7 +11,7 @@ import { EditModal } from '@/components/ui/EditModal'
 import { MediaUpload } from '@/components/ui/MediaUpload'
 import { useEdit } from '@/hooks/useEdit'
 import { useState } from 'react'
-import { Github, Linkedin, Twitter, Globe, MapPin, Edit, Plus } from 'lucide-react'
+import { Globe, MapPin, Pencil, Plus, Link2, Code2 } from 'lucide-react'
 import Link from 'next/link'
 
 export default function HomePage() {
@@ -95,7 +95,7 @@ export default function HomePage() {
                     onClick={openEdit}
                     className="absolute top-0 right-0 p-2 bg-[var(--primary)] text-[var(--background)] border-2 border-[var(--background)] hover:scale-110 transition-transform"
                   >
-                    <Edit size={16} />
+                    <Pencil size={16} />
                   </button>
                 )}
               </div>
@@ -143,7 +143,7 @@ export default function HomePage() {
                     rel="noopener noreferrer"
                     className="p-2 border-2 border-[var(--border)] text-[var(--text-muted)] hover:border-[var(--primary)] hover:text-[var(--primary)] transition-colors"
                   >
-                    <Github size={20} />
+                    <Code2 size={20} />
                   </a>
                 )}
                 {profile.socialLinks?.linkedin && (
@@ -153,17 +153,7 @@ export default function HomePage() {
                     rel="noopener noreferrer"
                     className="p-2 border-2 border-[var(--border)] text-[var(--text-muted)] hover:border-[var(--primary)] hover:text-[var(--primary)] transition-colors"
                   >
-                    <Linkedin size={20} />
-                  </a>
-                )}
-                {profile.socialLinks?.twitter && (
-                  <a 
-                    href={profile.socialLinks.twitter}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="p-2 border-2 border-[var(--border)] text-[var(--text-muted)] hover:border-[var(--primary)] hover:text-[var(--primary)] transition-colors"
-                  >
-                    <Twitter size={20} />
+                    <Link2 size={20} />
                   </a>
                 )}
               </div>
